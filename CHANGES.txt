@@ -4,7 +4,9 @@ Change History
 1.7.26 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add basic support for HTML5 autocomplete attribute (WCAG requirement).
+  For now, only string fields are supported.
+  [laulaz]
 
 
 1.7.25 (2018-12-17)

@@ -25,7 +25,7 @@ from Products.CMFCore.utils import getToolByName
 from AccessControl import ClassSecurityInfo
 
 from Products.PloneFormGen import PloneFormGenMessageFactory as _
-from Products.PloneFormGen.widgets import RichLabelWidget, CaptchaWidget
+from Products.PloneFormGen.widgets import RichLabelWidget, CaptchaWidget, AutocompleteStringWidget
 
 from Products.PloneFormGen.content.fieldsBase import *
 
@@ -46,7 +46,7 @@ class FGStringField(BaseFormField):
 
     security  = ClassSecurityInfo()
 
-    schema = BaseFieldSchemaStringDefault.copy() + Schema((
+    schema = BaseFieldSchemaStringAutocomplete.copy() + Schema((
         maxlengthField,
         sizeField,
         StringField('fgStringValidator',
@@ -57,6 +57,16 @@ class FGStringField(BaseFormField):
                 description=_(u'help_fgstringvalidator_text',
                   default=u"""Tests input against simple string patterns."""),
                 ),
+        ),
+        StringField('autocomplete',
+            searchable=0,
+            required=0,
+            vocabulary=AUTOCOMPLETE_VALUES,
+            widget=SelectionWidget(
+                label=_(u'label_autocomplete', default=u'Autocomplete'),
+                description=_(u'help_autocomplete', default=u"An autocomplete value for HTML5 autocomplete attribute."),
+                format="select",
+            ),
         ),
     ))
 
@@ -80,7 +90,18 @@ class FGStringField(BaseFormField):
             required=0,
             write_permission = View,
             validators=('isNotTooLong',),
+            widget = AutocompleteStringWidget(),
             )
+
+
+    def setAutocomplete(self, value, **kw):
+        """ set autocomplete for field widget """
+        self.fgField.widget.autocomplete = value
+
+
+    def getAutocomplete(self, **kw):
+        """ get autocomplete for field widget """
+        return getattr(self.fgField.widget, 'autocomplete', None)
 
 
     def stringValidatorsDL(self):
@@ -1302,7 +1323,6 @@ class FGCaptchaField(FGStringField):
 
     def __init__(self, oid, **kwargs):
         """ initialize class """
-
         BaseFormField.__init__(self, oid, **kwargs)
 
         # set a preconfigured field as an instance attribute

@@ -22,7 +22,8 @@ from Products.ATContentTypes.configuration import zconf
 from Products.TALESField import TALESString, TALESLines
 
 from Products.PloneFormGen.config import \
-    PROJECTNAME, EDIT_TALES_PERMISSION, EDIT_ADVANCED_PERMISSION
+    PROJECTNAME, EDIT_TALES_PERMISSION, EDIT_ADVANCED_PERMISSION, \
+    AUTOCOMPLETE_VALUES
 
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.Expression import getExprContext
@@ -282,6 +283,24 @@ BaseFieldSchemaStringDefault = BaseFieldSchema.copy() + Schema((
             description=_(u'help_fgdefault_text', default=u"The value the field "
                 "should contain when the form is first displayed."
                 "Note that this may be overridden dynamically."),
+            ),
+        ),
+    ))
+
+
+##
+# BaseFieldSchemaStringAutocomplete
+# A base schema for string fields that have autocomplete attribute
+
+BaseFieldSchemaStringAutocomplete = BaseFieldSchema.copy() + Schema((
+        StringField('autocomplete',
+            searchable=0,
+            required=0,
+            vocabulary=AUTOCOMPLETE_VALUES,
+            widget=SelectionWidget(
+                label=_(u'label_autocomplete', default=u'Autocomplete'),
+                description=_(u'help_autocomplete', default=u"An autocomplete value for HTML5 autocomplete attribute."),
+                format="select",
             ),
         ),
     ))
